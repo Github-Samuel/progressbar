@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 95 Progress Bar</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'MS Sans Serif', Arial, sans-serif;
+            background-color: #008080;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #bfbfbf;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-bottom: 2px solid #808080;
+            border-right: 2px solid #808080;
+            padding: 16px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #000;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .button {
+            background-color: #bfbfbf;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-bottom: 2px solid #808080;
+            border-right: 2px solid #808080;
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-right: 8px;
+            color: #000;
+        }
+
+        .button:active {
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-bottom: 2px solid #ffffff;
+            border-right: 2px solid #ffffff;
+        }
+
+        .progress-container {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 400px;
+            background-color: #bfbfbf;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-bottom: 2px solid #808080;
+            border-right: 2px solid #808080;
+            padding: 8px;
+            font-size: 14px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .progress-title {
+            font-weight: bold;
+            color: #000;
+        }
+
+        .progress-description {
+            font-size: 12px;
+            margin-bottom: 4px;
+            color: #000;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: #fff;
+            border: 1px solid #808080;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0;
+            background-color: #000080;
+            transition: width 0.3s linear;
+        }
+
+        .progress-stripes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1px;
+        }
+
+        .progress-stripe {
+            height: 2px;
+            width: 5px;
+            background-color: #bfbfbf;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Windows 95 Progress Bar Demo</h1>
+        <button id="startBtn" class="button">Start Installation</button>
+        <button id="stopBtn" class="button" disabled>Stop Installation</button>
+    </div>
+
+    <div id="progressContainer" class="progress-container" aria-live="polite">
+        <div class="progress-header">
+            <span class="progress-title">Installing Windows 95...</span>
+            <span id="progressPercentage" class="progress-title">0%</span>
+        </div>
+        <div class="progress-description">Please wait while setup copies files to your computer.</div>
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+            <div class="progress-stripes">
+                <div class="progress-stripe"></div>
+                <div class="progress-stripe"></div>
+                <div class="progress-stripe"></div>
+                <div class="progress-stripe"></div>
+                <div class="progress-stripe"></div>
+                <div class="progress-stripe"></div>
+                <div class="progress-stripe"></div>
+                <div class="progress-stripe"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const progressFill = document.getElementById('progressFill');
+        const progressPercentage = document.getElementById('progressPercentage');
+        const progressContainer = document.getElementById('progressContainer');
+
+        let progress = 0;
+        let intervalId = null;
+
+        function updateProgress() {
+            progressFill.style.width = `${progress}%`;
+            progressPercentage.textContent = `${progress}%`;
+            progressContainer.setAttribute('aria-valuenow', progress);
+        }
+
+        function startProgress() {
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            progress = 0;
+            updateProgress();
+
+            intervalId = setInterval(() => {
+                progress += 1;
+                if (progress > 100) {
+                    clearInterval(intervalId);
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                } else {
+                    updateProgress();
+                }
+            }, 100);
+        }
+
+        function stopProgress() {
+            clearInterval(intervalId);
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+        }
+
+        startBtn.addEventListener('click', startProgress);
+        stopBtn.addEventListener('click', stopProgress);
+
+        // Initialize ARIA attributes
+        progressContainer.setAttribute('role', 'progressbar');
+        progressContainer.setAttribute('aria-valuemin', '0');
+        progressContainer.setAttribute('aria-valuemax', '100');
+        progressContainer.setAttribute('aria-valuenow', '0');
+    </script>
+</body>
+</html>
